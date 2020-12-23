@@ -1,0 +1,23 @@
+.calculateBlock{
+    margin: 0 auto;
+    height: 600px;
+    width: 350px;
+    background-color:  #2d3142;
+    .titleBlock{
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+    }
+    .buttonBlock{
+        button {
+            width: 150px;
+            appearance: none;
+            border: 0;
+            border-radius: 5px;
+            background: #ef8354;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+    }
+}

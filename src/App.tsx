@@ -1,8 +1,11 @@
-import './App.css';
+import React from 'react'
+import './App.css'
+import CalculateComponent from './component/Calculate Component'
 
 function App() {
-  return (
-    <div>123</div>
+  return (<>
+    <CalculateComponent />
+  </>
   )
 
 }
