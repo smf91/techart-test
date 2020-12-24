@@ -12,10 +12,10 @@ const CANCEL_CHANGES = "CANCEL_CHANGES"
 const SET_STEP_VALUE = "SET_STEP_VALUE"
 
 export type InitialStateType = {
-    typeBuilding: string | null
+    typeBuilding: number | null
     numbersOfFloors: number | null
     materialBuilding: string | null
-    result : string| null
+    result: string | null
     stepValue: number
     wallSize: Array<number> | null
     material: Array<object>
@@ -36,7 +36,11 @@ const calculateReducer = (state = initialState, action: any): InitialStateType =
     switch (action.type) {
         case CANCEL_CHANGES:
             return {
-                ...state, typeBuilding: action.typeBuildingValue
+                ...state
+            }
+        case SET_STEP_VALUE:
+            return {
+                ...state, stepValue: state.stepValue++
             }
         case SET_TYPE_BUILDING:
             return {
@@ -56,9 +60,9 @@ type ActionsTypes = SetNumbersOfFloorsActionType | SetNumbersOfFloorsActionType 
 // --------------------------------
 type SetTypeBuildingActionType = {
     type: typeof SET_TYPE_BUILDING,
-    typeBuildingValue: string
+    typeBuildingValue: number
 }
-export const setTypeBuilding = (typeBuildingValue: string): SetTypeBuildingActionType => ({ type: SET_TYPE_BUILDING, typeBuildingValue })
+export const setTypeBuilding = (typeBuildingValue: number): SetTypeBuildingActionType => ({ type: SET_TYPE_BUILDING, typeBuildingValue })
 
 type SetNumbersOfFloorsActionType = {
     type: typeof SET_NUMBERS_OF_FLOORS,
@@ -107,9 +111,11 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 //     }
 // }
 
-export const calculateTC = (): ThunkType => async (dispatch: DispatchType) => {
-    // let data = await 
-    
+export const setTypeBuildingTC = (typeBuildingValue: number): ThunkType => {
+    return async (dispatch: any) => {
+        dispatch(setStepValue())
+        dispatch(setTypeBuilding(typeBuildingValue))
+    }
 }
 
 export default calculateReducer
