@@ -12,7 +12,6 @@ const CANCEL_CHANGES = "CANCEL_CHANGES"
 const SET_STEP_VALUE = "SET_STEP_VALUE"
 const SET_RESULT_AND_MESSAGE_VALUE = "SET_RESULT_AND_MESSAGE_VALUE"
 
-
 export type InitialStateType = {
     typeBuilding: number | null
     numbersOfFloors: number
@@ -38,7 +37,6 @@ let initialState: InitialStateType = {
     result: null,
     stepValue: 0,
     message: null,
-    // resultError: false,
     materialHouse: [
         { label: "кирпич", value: 1 },
         { label: "шлакоблок", value: 2 },
@@ -62,12 +60,10 @@ const calculateReducer = (state = initialState, action: any): InitialStateType =
                 wallSize: null,
                 result: null,
                 stepValue: 0,
-                // resultError: false,
             }
         case SET_STEP_VALUE:
-            // if (state.typeBuilding === 1 && state.stepValue ===2)
             return {
-                ...state, stepValue: state.stepValue + 1
+                ...state, stepValue: action.stepValue 
             }
         case SET_TYPE_BUILDING:
             return {
@@ -136,8 +132,9 @@ export const cancelChanges = (): CancelChangesActionType => ({ type: CANCEL_CHAN
 
 type setStepValueActionType = {
     type: typeof SET_STEP_VALUE,
+    stepValue: number
 }
-export const setStepValue = (): setStepValueActionType => ({ type: SET_STEP_VALUE })
+export const setStepValue = (stepValue: number): setStepValueActionType => ({ type: SET_STEP_VALUE, stepValue })
 
 type setResultAndMessageActionType = {
     type: typeof SET_RESULT_AND_MESSAGE_VALUE,
@@ -161,31 +158,30 @@ export const calculateTC = (): ThunkType => async (dispatch: any, getState) => {
     }
 }
 
-export const setTypeBuildingTC = (typeBuildingValue: number): ThunkType => {
+export const setTypeBuildingTC = (typeBuildingValue: number, stepValue: number): ThunkType => {
     return async (dispatch: any) => {
-        dispatch(setStepValue())
+        dispatch(setStepValue(stepValue))
         dispatch(setTypeBuilding(typeBuildingValue))
     }
 }
-export const setNumbersOfFloorsTC = (numbersOfFloorsValue: number): ThunkType => {
+export const setNumbersOfFloorsTC = (numbersOfFloorsValue: number, stepValue: number): ThunkType => {
     return async (dispatch: any) => {
+        dispatch(setStepValue(stepValue))
         dispatch(setNumbersOfFloors(numbersOfFloorsValue))
-        dispatch(setStepValue())
     }
 }
-export const setMaterialBuildingTC = (materialBuildingValue: number): ThunkType => {
+export const setMaterialBuildingTC = (materialBuildingValue: number, stepValue: number): ThunkType => {
     return async (dispatch: any) => {
-        dispatch(setStepValue())
+        dispatch(setStepValue(stepValue))
         dispatch(setMaterialBuilding(materialBuildingValue))
     }
 }
-export const setWallSizeTC = (wallSizeValue: Array<number>): ThunkType => {
+export const setWallSizeTC = (wallSizeValue: Array<number>, stepValue: number): ThunkType => {
     return async (dispatch: any) => {
-        dispatch(setStepValue())
+        dispatch(setStepValue(stepValue))
         dispatch(setWallSize(wallSizeValue))
         dispatch(calculateTC())
     }
 }
-
 
 export default calculateReducer

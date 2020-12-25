@@ -3,13 +3,11 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Radio, InputNumber, Col, Row } from 'antd'
 import cls from './Calculate-Component.module.scss'
-import store, { AppStateType } from '../redux/redux-store'
+import { AppStateType } from '../redux/redux-store'
 import {
     cancelChanges, setStepValue, setTypeBuilding, setTypeBuildingTC, setNumbersOfFloorsTC,
     setMaterialBuildingTC, setNumbersOfFloors, setWallSizeTC, calculateTC
 } from '../redux/calculate-reducer'
-
-
 
 //-----TYPE BLOCK
 type MapStateToPropsType = {
@@ -21,14 +19,14 @@ type MapStateToPropsType = {
     materialGarage: Array<object>
 }
 type MapDispathPropsType = {
-    cancelChanges: () => void
-    setStepValue: () => void
+    setStepValue: (stepValue: number) => void
     setTypeBuilding: (typeBuilding: number) => void
-    setTypeBuildingTC: (typeBuilding: number) => void
     setNumbersOfFloors: (numbersOfFloorsValue: number) => void
-    setNumbersOfFloorsTC: (numbersOfFloorsValue: number) => void
-    setMaterialBuildingTC: (materialBuildingValue: number) => void
-    setWallSizeTC: (wallSizeValue: Array<number>) => void
+    cancelChanges: () => void
+    setTypeBuildingTC: (typeBuilding: number, stepValue: number) => void
+    setNumbersOfFloorsTC: (numbersOfFloorsValue: number, stepValue: number) => void
+    setMaterialBuildingTC: (materialBuildingValue: number, stepValue: number) => void
+    setWallSizeTC: (wallSizeValue: Array<number>, stepValue: number) => void
     calculateTC: () => void
 }
 type OwnPropsType = {
@@ -38,35 +36,20 @@ type OwnPropsType = {
 type PropsType = MapStateToPropsType & MapDispathPropsType & OwnPropsType
 
 // ----------
+const CalculateComponent: React.FC<PropsType> = ({ setStepValue, stepValue, result, message, materialHouse,
+                                                materialGarage, typeBuilding, setNumbersOfFloors, setMaterialBuildingTC,
+                                                cancelChanges, setTypeBuildingTC, setNumbersOfFloorsTC, setWallSizeTC,
+                                                calculateTC,setTypeBuilding, ...props }) => {
 
-
-const CalculateComponent: React.FC<PropsType> = ({ result, message, materialHouse, materialGarage, typeBuilding, setNumbersOfFloors, setMaterialBuildingTC,
-    cancelChanges, setTypeBuildingTC, setNumbersOfFloorsTC, setWallSizeTC, calculateTC, ...props }) => {
     const swichStep = (stepValue: number): any => {
-        switch (stepValue) {
-            case 1:
-                return Step1
-            case 2:
-                if (typeBuilding === 1) {
-                    return Step2
-                } else {
-                    setNumbersOfFloorsTC(1)
-                    break
-                }
-            case 3:
-                return Step3
-            case 4:
-                return Step4
-            case 5:
-                return Step5
-            // default:
-            //     return Step1
+    let steps = [0, Step1, Step2, Step3, Step4, Step5]
+        if (typeBuilding === 2 && stepValue === 2) {
+            setStepValue(3)
+            stepValue++} 
+            return steps[stepValue]
         }
-    }
-    const nextStep = (): void => {
-        props.setStepValue()
-    }
-    const SomeTag = swichStep(props.stepValue)
+
+    const SomeTag = swichStep(stepValue)
     return (
         <>
             <div className={cls.calculateBlock}>
@@ -74,7 +57,7 @@ const CalculateComponent: React.FC<PropsType> = ({ result, message, materialHous
                     <span>Калькулятор цены конструкции</span>
                 </div>
                 {
-                    (props.stepValue === 0 || props.stepValue > 5)
+                    (stepValue === 0)
                         ? <>
                             {
                                 (message && result)
@@ -87,15 +70,15 @@ const CalculateComponent: React.FC<PropsType> = ({ result, message, materialHous
                                     : <div>  </div>
                             }
                             <div className={cls.buttonBlock}>
-                                <button onClick={nextStep}>Начать расчет</button>
+                                <button onClick={()=>{setStepValue(1)}}>Начать расчет</button>
                             </div>
                         </>
-                        : <SomeTag setTypeBuildingTC={setTypeBuildingTC} cancelChanges={cancelChanges}
+                        : <SomeTag stepValue={stepValue} setTypeBuildingTC={setTypeBuildingTC} cancelChanges={cancelChanges}
                             setNumbersOfFloorsTC={setNumbersOfFloorsTC} materialGarage={materialGarage}
                             materialHouse={materialHouse} setMaterialBuildingTC={setMaterialBuildingTC}
                             typeBuilding={typeBuilding} setWallSizeTC={setWallSizeTC} calculateTC={calculateTC}
-                            message={message} result={result}
-                        />
+                            message={message} result={result} setNumbersOfFloors={setNumbersOfFloors} 
+                            setTypeBuilding={setTypeBuilding} setStepValue={setStepValue}/>
                 }
             </div>
         </>
@@ -125,14 +108,13 @@ const Step1: React.FC<PropsType> = ({ cancelChanges, setTypeBuildingTC, ...props
             </div>
             <div className={cls.button2Block}>
                 <button onClick={cancelChanges}>Отменить</button>
-                <button onClick={() => { setTypeBuildingTC(value) }}>Далее</button>
+                <button onClick={() => { setTypeBuildingTC(value , 2) }}>Далее</button>
             </div>
         </>
     )
 }
 
 const Step2: React.FC<PropsType> = ({ cancelChanges, setNumbersOfFloorsTC, typeBuilding, ...props }) => {
-
     const [value, setValue] = React.useState(1);
     const onChange = (e: any) => {
         setValue(e);
@@ -151,7 +133,7 @@ const Step2: React.FC<PropsType> = ({ cancelChanges, setNumbersOfFloorsTC, typeB
             </div>
             <div className={cls.button2Block}>
                 <button onClick={cancelChanges}>Отменить</button>
-                <button onClick={() => { setNumbersOfFloorsTC(value) }}>Далее</button>
+                <button onClick={() => { setNumbersOfFloorsTC(value, 3) }}>Далее</button>
             </div>
         </>
     )
@@ -187,7 +169,7 @@ const Step3: React.FC<PropsType> = ({ setMaterialBuildingTC, cancelChanges, mate
             </div>
             <div className={cls.button2Block}>
                 <button onClick={cancelChanges}>Отменить</button>
-                <button onClick={() => { setMaterialBuildingTC(value) }}>Далее</button>
+                <button onClick={() => { setMaterialBuildingTC(value, 4) }}>Далее</button>
             </div>
         </>
     )
@@ -219,14 +201,13 @@ const Step4: React.FC<PropsType> = ({ setWallSizeTC, cancelChanges, ...props }) 
             </div>
             <div className={cls.button2Block}>
                 <button onClick={cancelChanges}>Отменить</button>
-                <button onClick={() => { setWallSizeTC([valueX, valueY]) }}>Рассчитать</button>
+                <button onClick={() => { setWallSizeTC([valueX, valueY], 5) }}>Рассчитать</button>
             </div>
         </>
     )
 }
 
 const Step5: React.FC<PropsType> = ({ message, result, cancelChanges, ...props }) => {
-
     return (
         <>
             <div className={cls.contentBlock}>
@@ -238,7 +219,7 @@ const Step5: React.FC<PropsType> = ({ message, result, cancelChanges, ...props }
                 </div>
             </div>
             <div className={cls.buttonBlock}>
-                <button onClick={cancelChanges}>Завершить</button>
+                <button onClick={cancelChanges}>Новый расчет</button>
             </div>
         </>
     )
@@ -254,7 +235,7 @@ const mapStateToProps = (state: AppStateType): MapStateToPropsType => {
         materialGarage: state.calculate.materialGarage
     }
 }
-
+// -----------------------------------------------------------------------------
 export default compose(
     connect<MapStateToPropsType, MapDispathPropsType, OwnPropsType, AppStateType>
         (mapStateToProps, {
