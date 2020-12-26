@@ -49,7 +49,7 @@ let initialState: InitialStateType = {
     ]
 }
 
-const calculateReducer = (state = initialState, action: any): InitialStateType => {
+const calculateReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case CANCEL_CHANGES:
             return {
@@ -92,8 +92,8 @@ const calculateReducer = (state = initialState, action: any): InitialStateType =
     }
 }
 // --------------------------------
-type ActionsTypes = SetNumbersOfFloorsActionType | SetNumbersOfFloorsActionType | SetWallSizeActionType
-    | SetMaterialBuildingActionType | CancelChangesActionType
+type ActionsTypes = SetNumbersOfFloorsActionType |  SetWallSizeActionType | setStepValueActionType | SetTypeBuildingActionType
+    | SetMaterialBuildingActionType | CancelChangesActionType | SetResultActionType | setResultAndMessageActionType
 // --------------------------------
 type SetTypeBuildingActionType = {
     type: typeof SET_TYPE_BUILDING,
